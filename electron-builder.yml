@@ -1,0 +1,34 @@
+appId: dev.fmod.launcher
+productName: FMod Launcher
+files:
+  - "**/*"
+extraMetadata:
+  main: src/main/main.js
+asar: true
+asarUnpack:
+  - "**/*.node"
+
+npmRebuild: false
+buildDependenciesFromSource: false
+
+directories:
+  output: dist/build
+  app: dist/app
+
+win:
+  target:
+    - nsis
+  artifactName: "${productName}-${version}-Setup.${ext}"
+  legalTrademarks: "FMod"
+  requestedExecutionLevel: requireAdministrator
+  icon: build/fmod.ico
+
+nsis:
+  oneClick: true
+  perMachine: false
+  allowToChangeInstallationDirectory: false
+  deleteAppDataOnUninstall: false
+  installerIcon: build/fmod.ico
+  uninstallerIcon: build/fmod.ico
+
+publish: null

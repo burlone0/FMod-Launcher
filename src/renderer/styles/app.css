@@ -1,0 +1,41 @@
+@font-face {
+  font-family: 'Vastago Grotesk';
+  src: local('Vastago Grotesk'), url('../fonts/VastagoGrotesk-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Vastago Grotesk';
+  src: local('Vastago Grotesk Bold'), url('../fonts/VastagoGrotesk-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+* { box-sizing: border-box; -webkit-user-select: none; user-select: none; }
+img { -webkit-user-drag: none; user-drag: none; }
+html, body { height: 100%; }
+body { font-family: 'Vastago Grotesk', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif; }
+
+.app-titlebar {
+  position: fixed; top: 0; left: 0; right: 0; height: 42px;
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-app-region: drag;
+  z-index: 1000;
+}
+.app-titlebar h1 { margin: 0; font-size: 14px; font-weight: 600; color: #a3acc2; }
+.spacer { flex: 1; }
+.window-controls { position: absolute; top: 8px; right: 10px; display: inline-flex; gap: 6px; -webkit-app-region: no-drag; }
+.window-controls button {
+  width: 28px; height: 24px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px;
+  background: rgba(255,255,255,0.02); color: #a3acc2;
+  display: grid; place-items: center; cursor: pointer; line-height: 1;
+}
+.window-controls button:hover { filter: brightness(1.1); }
+.window-controls button#winClose:hover { background: #ff5f5740; color: #fff; }
+
+b, strong, h1, h2, h3, h4, h5, h6, .bold { font-weight: 700; }

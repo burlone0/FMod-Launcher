@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FMod Launcher — Home</title>
+    <link rel="stylesheet" href="styles/app.css" />
+    <link rel="stylesheet" href="styles/home.css" />
+    <style>
+      .toast-container {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        display: grid;
+        gap: 10px;
+        z-index: 2000;
+        pointer-events: none;
+      }
+      .toast {
+        pointer-events: auto;
+        min-width: 260px;
+        max-width: 380px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.10);
+        background: rgba(27,34,44,0.92);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
+        box-shadow: 0 14px 36px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.06);
+        color: #e6e8f0;
+        display: grid;
+        grid-template-columns: 22px 1fr auto;
+        align-items: center;
+        column-gap: 10px;
+        transform: translateY(8px);
+        opacity: 0;
+        animation: toast-in 160ms ease-out forwards;
+      }
+      .toast .t-icon {
+        width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center;
+        background: rgba(255,255,255,0.10);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.06);
+        font-size: 14px; line-height: 1; opacity: 0.95;
+      }
+      .toast .t-title { font-weight: 700; font-size: 14px; margin: 0; }
+      .toast .t-msg { font-size: 12px; opacity: 0.9; margin-top: 2px; white-space: pre-line; }
+      .toast .t-close { border: none; background: transparent; color: #a3acc2; cursor: pointer; font-size: 16px; padding: 6px; border-radius: 8px; }
+      .toast .t-close:hover { color: #fff; background: rgba(255,255,255,0.06); }
+
+      .toast.success { border-color: rgba(56, 239, 125, 0.35); box-shadow: 0 14px 36px rgba(25,255,164,0.16), inset 0 1px 0 rgba(255,255,255,0.06); }
+      .toast.success .t-icon { background: linear-gradient(135deg, #38ef7d, #11998e); color: #062012; }
+      .toast.error { border-color: rgba(255, 95, 87, 0.35); box-shadow: 0 14px 36px rgba(255,95,87,0.16), inset 0 1px 0 rgba(255,255,255,0.06); }
+      .toast.error .t-icon { background: linear-gradient(135deg, #ff5f57, #c0392b); color: #2b0a08; }
+      .toast.info { border-color: rgba(110,231,255,0.28); box-shadow: 0 14px 36px rgba(110,231,255,0.14), inset 0 1px 0 rgba(255,255,255,0.06); }
+      .toast.info .t-icon { background: linear-gradient(135deg, #6ee7ff, #9b8cff); color: #0a1b2b; }
+
+      @keyframes toast-in {
+        from { opacity: 0; transform: translateY(8px) scale(0.995); filter: blur(1px); }
+        to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+      }
+      @keyframes toast-out {
+        from { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+        to   { opacity: 0; transform: translateY(6px) scale(0.995); filter: blur(1px); }
+      }
+    </style>
+  </head>
+  <body oncontextmenu="return false;">
+    <div class="home-bg" aria-hidden="true">
+      <div class="blob a"></div>
+      <div class="blob b"></div>
+      <div class="glow"></div>
+      <div class="twinkle"></div>
+    </div>
+    <div class="app-titlebar">
+      <h1>FMod Launcher</h1>
+      <div class="spacer"></div>
+      <div class="window-controls">
+        <button id="winMin" aria-label="Minimize">–</button>
+        <button id="winClose" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true" id="userLogo"></div>
+          <div class="brand-text">
+            <div class="welcome">Welcome, <span id="username">User</span></div>
+            <div class="current-page" id="currentPage">Home</div>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="item active" id="navPlay">
+            <img class="icon-left" src="images/play.png" alt="Play" />
+            <span class="label">Play</span>
+            <span class="dots-layer" aria-hidden="true"></span>
+            <span class="dots-layer second" aria-hidden="true"></span>
+          </button>
+          <button class="item" id="navSettings">
+            <img class="icon-left" src="images/settings.png" alt="Settings" />
+            <span class="label">Settings</span>
+            <span class="dots-layer" aria-hidden="true"></span>
+            <span class="dots-layer second" aria-hidden="true"></span>
+          </button>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="credits">Made with 💙 by <a class="credit-link" href="#" id="creditLink">burlone413</a></div>
+          <button class="item btn-donate" id="navDonate">
+            <img class="icon-left" src="images/donate.png" alt="Donate" />
+            <span class="label">Donate</span>
+            <span class="dots-layer" aria-hidden="true"></span>
+            <span class="dots-layer second" aria-hidden="true"></span>
+          </button>
+        </div>
+      </aside>
+
+      <main class="view">
+        <div class="page">
+          <div class="banner">
+            <img src="images/banner.jpg" alt="Banner" />
+          </div>
+          <button class="mega-info" id="btnMega" type="button">
+            <span class="icon-round" aria-hidden="true"><img src="images/error.png" alt="" /></span>
+            <span class="text">
+              <strong class="title">Close FMod</strong>
+              <span class="desc">Please close FMod before launching it again, if you are experiencing issues, please restart your computer.</span>
+            </span>
+          </button>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      (function () {
+        const root = document.documentElement;
+                let idleTimer = null;
+        const idleDelay = 15000;
+        function setAnimPaused(paused) {
+          if (paused) root.classList.add('anim-paused');
+          else root.classList.remove('anim-paused');
+        }
+        function resetIdleTimer() {
+          setAnimPaused(false);
+          if (idleTimer) clearTimeout(idleTimer);
+          idleTimer = setTimeout(() => setAnimPaused(true), idleDelay);
+        }
+        ['mousemove','keydown','wheel','pointerdown','touchstart'].forEach(evt => {
+          window.addEventListener(evt, resetIdleTimer, { passive: true });
+        });
+        document.addEventListener('visibilitychange', () => {
+          setAnimPaused(document.hidden);
+          if (!document.hidden) resetIdleTimer();
+        });
+        window.addEventListener('blur', () => setAnimPaused(true));
+        window.addEventListener('focus', () => resetIdleTimer());
+
+        resetIdleTimer();
+        const winMin = document.getElementById('winMin');
+        const winClose = document.getElementById('winClose');
+        winMin?.addEventListener('click', () => window.fmod?.win?.minimize?.());
+        winClose?.addEventListener('click', () => window.fmod?.win?.close?.());
+
+        const toaster = (() => {
+          let container;
+          function ensure() {
+            if (!container) {
+              container = document.createElement('div');
+              container.className = 'toast-container';
+              document.body.appendChild(container);
+            }
+            return container;
+          }
+          function iconFor(type) {
+            switch (type) {
+              case 'success': return '✓';
+              case 'error': return '!';
+              default: return 'i';
+            }
+          }
+          function show(message, type = 'info', opts = {}) {
+            const { title, timeout = 4000 } = opts;
+            const el = document.createElement('div');
+            el.className = `toast ${type}`;
+            el.innerHTML = `
+              <div class="t-icon">${iconFor(type)}</div>
+              <div class="t-text">
+                ${title ? `<div class=\"t-title\">${title}</div>` : ''}
+                <div class="t-msg">${message}</div>
+              </div>
+              <button class="t-close" aria-label="Close">×</button>
+            `;
+            ensure().appendChild(el);
+            const closer = el.querySelector('.t-close');
+            const close = () => {
+              el.style.animation = 'toast-out 160ms ease-in forwards';
+              setTimeout(() => el.remove(), 180);
+            };
+            closer?.addEventListener('click', close);
+            if (timeout > 0) setTimeout(close, timeout);
+            return { close };
+          }
+          return { show };
+        })();
+        const toast = (message, type = 'info', opts = {}) => toaster.show(message, type, opts);
+
+        const navDonate = document.getElementById('navDonate');
+        navDonate?.addEventListener('click', async () => {
+          try { await window.fmod?.openExternal?.('https://fmodogfn.mysellauth.com/'); } catch (_) {}
+        });
+        const creditLink = document.getElementById('creditLink');
+        creditLink?.addEventListener('click', async (e) => {
+          e.preventDefault();
+          try { await window.fmod?.openExternal?.('https://github.com/burlone0'); } catch (_) {}
+        });
+
+        let lastAppliedSkin = null;
+        async function applySkin(url) {
+          const logoEl = document.getElementById('userLogo');
+          if (!logoEl || !url || url === lastAppliedSkin) return;
+          logoEl.style.backgroundImage = `url('${url}')`;
+          logoEl.style.backgroundSize = 'cover';
+          logoEl.style.backgroundPosition = 'center';
+          lastAppliedSkin = url;
+        }
+        async function refreshSkinOnce() {
+          try {
+            const auth = await window.fmod?.auth?.get?.();
+            const email = auth?.email || null;
+            const password = auth?.password || null;
+            if (!email || !password) return;
+            const res = await window.fmod?.api?.login?.(email, password);
+            const ok = !!res && (res.status >= 200 && res.status < 300) && res.body;
+            if (!ok) return;
+            const charRaw = res.body?.character ?? res.body?.Character;
+            const cleanId = (charRaw || '').replace(/^AthenaCharacter:/i, '');
+            if (!cleanId) return;
+            const apiUrl = 'https://fortnite-api.com/v2/cosmetics/br/search?id=' + encodeURIComponent(cleanId);
+            const r = await fetch(apiUrl);
+            if (!r?.ok) return;
+            const j = await r.json();
+            const skinUrl = j?.data?.images?.smallIcon || j?.data?.images?.icon || null;
+            if (!skinUrl) return;
+            const current = localStorage.getItem('userSkin');
+            if (current !== skinUrl) {
+              try { localStorage.setItem('userSkin', skinUrl); } catch (_) {}
+              await applySkin(skinUrl);
+            }
+          } catch (_) {}
+        }
+        let skinPoller = null;
+        function startSkinPolling() {
+          if (skinPoller) return;
+          const tick = async () => {
+            if (document.hidden) return;
+            await refreshSkinOnce();
+          };
+          skinPoller = setInterval(tick, 10000);
+          tick();
+        }
+        startSkinPolling();
+
+        const navSettings = document.getElementById('navSettings');
+
+        const view = document.querySelector('.view');
+        function setActive(btn) {
+          document.querySelectorAll('.nav .item').forEach(el => el.classList.remove('active'));
+          btn?.classList.add('active');
+        }
+        function setCurrentPageLabel(text) {
+          const currentPageEl = document.getElementById('currentPage');
+          if (currentPageEl) currentPageEl.textContent = text;
+        }
+        function renderHome() {
+          if (!view) return;
+          view.innerHTML = `
+            <div class="page">
+              <div class="banner">
+                <img src="images/banner.jpg" alt="Banner" />
+              </div>
+              <button class="mega-info" id="btnMega" type="button">
+                <span class="icon-round" aria-hidden="true"><img src="images/launch.png" alt="" /></span>
+                <span class="text">
+                  <strong class="title">Launch FMod</strong>
+                  <span class="desc">Launch FMod to start the OG Fortnite experience. This will prepare required services and open the game.</span>
+                </span>
+              </button>
+            </div>
+          `;
+          setCurrentPageLabel('Home');
+          setupHomeInteractivity();
+        }
+        function renderSettings() {
+          if (!view) return;
+          view.innerHTML = `
+            <div class="page">
+              <section class="settings-card">
+                <div class="settings-title">
+                  <img class="icon-img" src="images/build.png" alt="" aria-hidden="true" />
+                  <span class="text">Select <span class="hl-alt">8.51</span> Build <span class="hl">Path</span></span>
+                </div>
+                <div class="path-row">
+                  <button class="btn-path btn-851" id="btnChangePath" type="button" title="Select 8.51 build folder">Change 8.51 Path</button>
+                  <button class="btn-mini" id="btnEditPath" type="button" hidden>Change</button>
+                </div>
+                <p class="settings-desc">By choosing where you install Fortnite Build of Season 8, make sure to <em>Create a folder</em> and then select it.</p>
+              </section>
+
+              
+              <section class="settings-card">
+                <div class="settings-title">
+                  <img class="icon-img" src="images/login.png" alt="" aria-hidden="true" />
+                  <span class="text">Account</span>
+                </div>
+                <p class="settings-desc">Disconnect your account. You will be returned to the login screen and remain logged out.</p>
+                <div class="path-row">
+                  <button class="btn-path" id="btnDisconnect" type="button" style="background: linear-gradient(135deg, #ff5f57, #c0392b); box-shadow: 0 10px 24px rgba(255,95,87,0.25);">Disconnect Account</button>
+                </div>
+              </section>
+            </div>
+          `;
+          setCurrentPageLabel('Settings');
+          const btnPath = document.getElementById('btnChangePath');
+          const btnEdit = document.getElementById('btnEditPath');
+          const btnDisconnect = document.getElementById('btnDisconnect');
+          const updatePathUI = () => {
+            const saved = localStorage.getItem('build851Path');
+            if (saved) {
+              btnPath.textContent = saved;
+              btnPath.setAttribute('disabled', '');
+              btnEdit.hidden = false;
+            } else {
+              btnPath.textContent = 'Change 8.51 Path';
+              btnPath.removeAttribute('disabled');
+              btnEdit.hidden = true;
+            }
+          };
+          updatePathUI();
+
+          btnPath?.addEventListener('click', async () => {
+            if (btnPath.hasAttribute('disabled')) return;
+            try {
+              const folder = await window.fmod?.dialog?.selectFolder?.();
+              if (folder) {
+                const res = await window.fmod?.validate?.buildFolder?.(folder);
+                if (res?.ok) {
+                  localStorage.setItem('build851Path', folder);
+                  updatePathUI();
+                  toast('8.51 build folder added successfully.', 'success', { title: 'Path Saved' });
+                } else {
+                  const missingList = (res?.missing || []).join('\n• ');
+                  toast('The selected folder is not valid. The following files are missing in \\FortniteGame\\Content\\Paks:\n\n• ' + missingList, 'error', { title: 'Missing PAK Files', timeout: 7000 });
+                }
+              }
+            } catch (_) {}
+          });
+          btnEdit?.addEventListener('click', async () => {
+            try {
+              const folder = await window.fmod?.dialog?.selectFolder?.();
+              if (folder) {
+                const res = await window.fmod?.validate?.buildFolder?.(folder);
+                if (res?.ok) {
+                  localStorage.setItem('build851Path', folder);
+                  updatePathUI();
+                  toast('8.51 build folder updated.', 'success', { title: 'Path Updated' });
+                } else {
+                  const missingList = (res?.missing || []).join('\n• ');
+                  toast('The selected folder is not valid. The following files are missing in \\FortniteGame\\Content\\Paks:\n\n• ' + missingList, 'error', { title: 'Missing PAK Files', timeout: 7000 });
+                }
+              }
+            } catch (_) {}
+          });
+
+          btnDisconnect?.addEventListener('click', async () => {
+            try {
+              await window.fmod?.auth?.set?.({ isLoggedIn: false, rememberMe: false, email: null, password: null, displayName: null, skinUrl: null, token: '' });
+              try { localStorage.removeItem('username'); } catch (_) {}
+              try { localStorage.removeItem('userSkin'); } catch (_) {}
+              try { localStorage.setItem('fmodRunning', '0'); } catch (_) {}
+              await window.fmod?.nav?.toLogin?.();
+            } catch (_) {}
+          });
+
+                  }
+
+        function setupHomeInteractivity() {
+          const page = document.querySelector('.page');
+          const btnMega = page?.querySelector('#btnMega');
+          if (!btnMega) return;
+          const iconImg = btnMega.querySelector('.icon-round img');
+          const titleEl = btnMega.querySelector('.title');
+          const descEl = btnMega.querySelector('.desc');
+          const updateMegaInfoUI = () => {
+            const running = localStorage.getItem('fmodRunning') === '1';
+            if (running) {
+              if (iconImg) iconImg.src = 'images/error.png';
+              if (titleEl) titleEl.textContent = 'Close FMod';
+              if (descEl) descEl.textContent = 'Please close FMod before launching it again, if you are experiencing issues, please restart your computer.';
+            } else {
+              if (iconImg) iconImg.src = 'images/launch.png';
+              if (titleEl) titleEl.textContent = 'Launch FMod';
+              if (descEl) descEl.textContent = 'Launch FMod to start the OG Fortnite experience. This will prepare required services and open the game.';
+            }
+            btnMega.removeAttribute('disabled');
+          };
+          updateMegaInfoUI();
+
+          btnMega.addEventListener('click', async () => {
+            const running = localStorage.getItem('fmodRunning') === '1';
+            btnMega.setAttribute('disabled', '');
+            if (!running) {
+              const root = localStorage.getItem('build851Path');
+              if (!root) {
+                if (descEl) descEl.textContent = 'Please select your 8.51 folder in Settings first.';
+                toast('8.51 build folder not selected.', 'error', { title: 'Missing 8.51 Path' });
+                btnMega.removeAttribute('disabled');
+                return;
+              }
+              let email = null, password = null;
+              try {
+                const auth = await window.fmod?.auth?.get?.();
+                email = auth?.email || null;
+                password = auth?.password || null;
+              } catch (_) {}
+              if (!email || !password) {
+                toast('Account credentials are not configured.', 'error', { title: 'Missing Credentials' });
+                btnMega.removeAttribute('disabled');
+                return;
+              }
+              if (titleEl) titleEl.textContent = 'Installing files required to play FMod...';
+              if (descEl) descEl.textContent = 'Please wait while the necessary files are being installed.';
+              const prep = await window.fmod?.game?.prepare?.(root);
+              if (!prep?.ok) {
+                toast(prep?.error || 'Failed to install files.', 'error', { title: 'Installation Error' });
+                btnMega.removeAttribute('disabled');
+                updateMegaInfoUI();
+                return;
+              }
+              if (titleEl) titleEl.textContent = 'Launch FMod';
+              if (descEl) descEl.textContent = 'Launching FMod...';
+              const res = await window.fmod?.game?.start?.(root, email, password);
+              if (!res?.ok) {
+                toast(res?.error || 'Failed to launch.', 'error', { title: 'Launch Error' });
+                btnMega.removeAttribute('disabled');
+                return;
+              }
+              localStorage.setItem('fmodRunning', '1');
+              updateMegaInfoUI();
+            } else {
+              if (descEl) descEl.textContent = 'Closing FMod...';
+              try { await window.fmod?.game?.kill?.(); } catch (_) {}
+              setTimeout(() => {
+                localStorage.setItem('fmodRunning', '0');
+                updateMegaInfoUI();
+              }, 400);
+            }
+          });
+        }
+        setupHomeInteractivity();
+
+        function switchView(renderFn) {
+          if (!view) return;
+          const current = view.querySelector('.page');
+          if (current) {
+            current.classList.remove('page-enter');
+            current.classList.add('page-leave');
+            const onEnd = () => {
+              current.removeEventListener('animationend', onEnd);
+              renderFn();
+              const next = view.querySelector('.page');
+              requestAnimationFrame(() => next?.classList.add('page-enter'));
+            };
+            current.addEventListener('animationend', onEnd);
+          } else {
+            renderFn();
+            const next = view.querySelector('.page');
+            requestAnimationFrame(() => next?.classList.add('page-enter'));
+          }
+        }
+
+        navSettings?.addEventListener('click', () => {
+          setActive(navSettings);
+          switchView(renderSettings);
+        });
+
+        const navPlayBtn = document.getElementById('navPlay');
+        navPlayBtn?.addEventListener('click', () => {
+          setActive(navPlayBtn);
+          switchView(renderHome);
+        });
+
+        const usernameEl = document.getElementById('username');
+        const currentPageEl = document.getElementById('currentPage');
+        const h2 = document.querySelector('.view h2');
+        if (currentPageEl) currentPageEl.textContent = (h2?.textContent || 'Home');
+        try {
+          const stored = localStorage.getItem('username');
+          if (usernameEl) usernameEl.textContent = stored || 'User';
+          const logoEl = document.getElementById('userLogo');
+          const skin = localStorage.getItem('userSkin');
+          if (logoEl) {
+            if (skin) {
+              logoEl.style.backgroundImage = `url('${skin}')`;
+              logoEl.style.backgroundSize = 'cover';
+              logoEl.style.backgroundPosition = 'center';
+            } else {
+              logoEl.style.backgroundImage = "url('images/fmod.png')";
+              logoEl.style.backgroundSize = 'cover';
+              logoEl.style.backgroundPosition = 'center';
+            }
+          }
+        } catch (_) {
+          const logoEl = document.getElementById('userLogo');
+          if (usernameEl) usernameEl.textContent = 'User';
+          if (logoEl) logoEl.style.backgroundImage = "url('images/fmod.png')";
+        }
+
+        const rand = (min, max) => Math.random() * (max - min) + min;
+        const makeDots = (container, count = 24, colorful = false, opts = {}) => {
+          const { sizeMin = 1.2, sizeMax = 2.2, durMin = 3.8, durMax = 6.5 } = opts;
+          const frag = document.createDocumentFragment();
+          for (let i = 0; i < count; i++) {
+            const d = document.createElement('i');
+            d.className = 'dot';
+            const size = rand(sizeMin, sizeMax);
+            const left = rand(-10, 110);
+            const delay = rand(0, 3);
+            const dur = rand(durMin, durMax);
+            const drift = rand(-20, 20);
+            d.style.setProperty('--size', size + 'px');
+            d.style.setProperty('--x', left + '%');
+            d.style.setProperty('--delay', delay + 's');
+            d.style.setProperty('--dur', dur + 's');
+            d.style.setProperty('--drift', drift + 'px');
+            if (colorful) {
+              const hue = Math.floor(rand(0, 360));
+              const sat = Math.floor(rand(60, 90));
+              const lig = Math.floor(rand(55, 75));
+              d.style.background = `hsl(${hue} ${sat}% ${lig}%)`;
+              d.style.boxShadow = `0 0 8px hsl(${hue} ${sat}% ${lig}%)`;
+            }
+            frag.appendChild(d);
+          }
+          container.innerHTML = '';
+          container.appendChild(frag);
+        };
+
+        const navPlay = document.getElementById('navPlay');
+        if (navPlay) {
+          const layer1 = navPlay.querySelector('.dots-layer');
+          const layer2 = navPlay.querySelector('.dots-layer.second');
+          makeDots(layer1, 22, false, { sizeMin: 2.2, sizeMax: 3.6, durMin: 2.6, durMax: 4.2 });
+          makeDots(layer2, 18, false, { sizeMin: 2.0, sizeMax: 3.2, durMin: 2.8, durMax: 4.6 });
+        }
+
+        const navSettingsBtn = document.getElementById('navSettings');
+        if (navSettingsBtn) {
+          const layer1 = navSettingsBtn.querySelector('.dots-layer');
+          const layer2 = navSettingsBtn.querySelector('.dots-layer.second');
+          makeDots(layer1, 20, false, { sizeMin: 2.0, sizeMax: 3.4, durMin: 2.6, durMax: 4.4 });
+          makeDots(layer2, 16, false, { sizeMin: 1.8, sizeMax: 3.0, durMin: 2.8, durMax: 4.8 });
+        }
+
+        const navDonateBtn = document.getElementById('navDonate');
+        if (navDonateBtn) {
+          const layer1 = navDonateBtn.querySelector('.dots-layer');
+          const layer2 = navDonateBtn.querySelector('.dots-layer.second');
+          makeDots(layer1, 20, true, { sizeMin: 2.4, sizeMax: 3.8, durMin: 2.4, durMax: 4.0 });
+          makeDots(layer2, 16, true, { sizeMin: 2.2, sizeMax: 3.4, durMin: 2.6, durMax: 4.2 });
+        }
+      })();
+    </script>
+  </body>
+</html>

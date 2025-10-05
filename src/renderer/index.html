@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FMod Launcher</title>
+    <link rel="stylesheet" href="styles/app.css" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body oncontextmenu="return false;">
+    <div class="app-titlebar">
+      <h1>FMod Launcher</h1>
+      <div class="spacer"></div>
+      <div class="window-controls">
+        <button id="winMin" aria-label="Minimize">–</button>
+        <button id="winClose" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <main class="content" style="padding-top:66px;">
+      <section class="card">
+        <h2>Benvenuto</h2>
+        <p>Base del launcher Electron pronta. Modifica liberamente questa UI.</p>
+              </section>
+    </main>
+
+    <footer class="app-footer">
+      <span>© 2025 FMod Launcher</span>
+    </footer>
+
+    <script>
+      (function () {
+        const winMin = document.getElementById('winMin');
+        const winClose = document.getElementById('winClose');
+        winMin?.addEventListener('click', () => window.fmod?.win?.minimize?.());
+        winClose?.addEventListener('click', () => window.fmod?.win?.close?.());
+      })();
+    </script>
+      </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "fmod-launcher",
+  "productName": "FMod Launcher",
+  "version": "1.0.0",
+  "description": "FMod Launcher made by burlone413.",
+  "main": "src/main/main.js",
+  "author": "",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "node scripts/build.js"
+  },
+  "dependencies": {
+    "discord-rich-presence": "^0.0.8"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "javascript-obfuscator": "^4.1.1"
+  }
+}

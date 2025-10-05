@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FMod Launcher — Sign in</title>
+    <link rel="stylesheet" href="styles/app.css" />
+    <link rel="stylesheet" href="login.css" />
+    <style>
+      .form-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 2px 0 10px; }
+      .checkbox { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); user-select: none; cursor: pointer; }
+      .checkbox input { appearance: none; width: 18px; height: 18px; border-radius: 6px; border: 1px solid var(--border); background: rgba(255,255,255,0.04); display: grid; place-items: center; position: relative; overflow: hidden; }
+      .checkbox input::before { content: ""; position: absolute; inset: 0; background: linear-gradient(135deg, var(--accent), var(--accent-2)); transform: scale(0); opacity: 0; transition: transform 140ms ease, opacity 140ms ease; }
+      .checkbox input:checked::before { transform: scale(1); opacity: 1; }
+      .checkbox input::after { content: ''; position: absolute; width: 8px; height: 5px; border-left: 2px solid #0a1b2b; border-bottom: 2px solid #0a1b2b; top: 50%; left: 50%; transform: translate(-50%, -55%) rotate(-45deg); opacity: 0; transition: opacity 120ms ease 60ms, transform 140ms ease; }
+      .checkbox input:checked::after { opacity: 1; transform: translate(-50%, -55%) rotate(-45deg) scale(1); }
+      .link { color: var(--accent); text-decoration: none; font-size: 13px; }
+      .link:hover { text-decoration: underline; filter: brightness(1.1); }
+      .btn.btn-login { height: 42px; width: 100%; }
+    </style>
+  </head>
+  <body oncontextmenu="return false;">
+    <div class="bg-blur" aria-hidden="true">
+      <div class="blob a"></div>
+      <div class="blob b"></div>
+      <div class="blob c"></div>
+      <div class="blob d"></div>
+      <div class="glow"></div>
+      <div class="twinkle"></div>
+      <div class="grain"></div>
+    </div>
+
+    <div class="app-titlebar">
+      <h1>FMod Launcher</h1>
+      <div class="spacer"></div>
+      <div class="window-controls">
+        <button id="winMin" aria-label="Minimize">–</button>
+        <button id="winClose" aria-label="Close">×</button>
+      </div>
+    </div>
+
+    <div class="center">
+      <div class="modal-window" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+        <div class="content">
+          <div class="hero">
+            <div class="hero-icon">
+              <img src="images/fmod.png" alt="FMod Launcher" />
+            </div>
+            <h2 class="headline" id="loginTitle">Sign in to FMod Launcher</h2>
+            <p class="subtitle">Enter your email and password to continue.</p>
+          </div>
+
+          <div class="actions">
+            <div id="adminNotice" style="display:none; margin-bottom:10px; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); color:#fff;">
+              <div style="display:flex; align-items:center; gap:10px;">
+                <img src="images/warning.png" alt="Warning" style="width:18px; height:18px; opacity:0.9;" />
+                <div style="font-weight:700;">Administrator required</div>
+              </div>
+              <div style="opacity:0.9; font-size:13px; margin-top:6px;">FMod Launcher must be started as Administrator to log in and manage game files. Relaunch now with elevated privileges.</div>
+                          </div>
+            <form id="loginForm" autocomplete="off" novalidate>
+              <div class="field">
+                <input id="email" name="email" type="email" inputmode="email" placeholder="name@example.com" required />
+              </div>
+              <div class="field">
+                <input id="password" name="password" type="password" placeholder="••••••••" required />
+              </div>
+              <div class="form-row">
+                <label class="checkbox"><input type="checkbox" id="staySignedIn" /> <span>Stay signed in</span></label>
+                <a id="forgotPwd" href="#" class="link">Forgot password?</a>
+              </div>
+              <p id="loginError" class="error" style="display:none;"></p>
+              <button id="btnLogin" class="btn btn-discord btn-login" type="submit">
+                <strong>Sign In</strong>
+              </button>
+            </form>
+          </div>
+
+          <p class="footnote">By continuing, you agree to our Terms and Privacy Policy.</p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+                const loginForm = document.getElementById('loginForm');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+        const btnLogin = document.getElementById('btnLogin');
+        const winMin = document.getElementById('winMin');
+        const winClose = document.getElementById('winClose');
+        const errorEl = document.getElementById('loginError');
+        const staySignedIn = document.getElementById('staySignedIn');
+        const forgotPwd = document.getElementById('forgotPwd');
+        const adminNotice = document.getElementById('adminNotice');
+        let isElevated = true;
+
+        winMin?.addEventListener('click', () => window.fmod?.win?.minimize?.());
+        winClose?.addEventListener('click', () => window.fmod?.win?.close?.());
+
+        forgotPwd?.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.fmod?.openExternal?.('https://discord.gg/xw5R7Tp2Xe');
+        });
+
+        (async () => {
+          try {
+            try {
+              isElevated = await window.fmod?.elevate?.status?.();
+            } catch (_) { isElevated = false; }
+            if (!isElevated) {
+              if (adminNotice) adminNotice.style.display = 'block';
+              if (btnLogin) btnLogin.disabled = true;
+            }
+
+            const auth = await window.fmod?.auth?.get?.();
+            const emailSaved = auth?.email;
+            const passSaved = auth?.password;
+            const rememberSaved = !!auth?.rememberMe;
+            if (isElevated && rememberSaved && emailSaved && passSaved) {
+              const res = await window.fmod?.api?.login?.(emailSaved, passSaved);
+              const ok = !!res && (res.status >= 200 && res.status < 300) && res.body && (res.body.display_name || res.body.account_id);
+              if (ok) {
+                const displayName = res.body?.display_name || auth?.displayName || 'User';
+                try { localStorage.setItem('username', displayName); } catch (_) {}
+                await window.fmod?.auth?.set?.({ isLoggedIn: true, rememberMe: true, displayName });
+                await window.fmod?.nav?.toMain?.();
+                return;
+              }
+              await window.fmod?.auth?.set?.({ isLoggedIn: false, rememberMe: false, email: null, password: null, displayName: null });
+            }
+          } catch (_) {}
+        })();
+
+        loginForm?.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          try {
+            try {
+              isElevated = await window.fmod?.elevate?.status?.();
+            } catch (_) { isElevated = false; }
+            if (!isElevated) {
+              if (adminNotice) adminNotice.style.display = 'block';
+              if (errorEl) {
+                errorEl.textContent = 'Start the launcher as Administrator to log in.';
+                errorEl.style.display = 'block';
+              }
+              return;
+            }
+
+            const emailVal = (email?.value || '').trim();
+            const passVal = password?.value || '';
+            if (!emailVal || !passVal) {
+              if (errorEl) {
+                errorEl.textContent = 'Please enter email and password.';
+                errorEl.style.display = 'block';
+              }
+              return;
+            }
+            if (errorEl) errorEl.style.display = 'none';
+            if (btnLogin) {
+              btnLogin.disabled = true;
+              btnLogin.innerHTML = '<strong>Signing in...</strong>';
+            }
+            const remember = !!staySignedIn?.checked;
+            const res = await window.fmod?.api?.login?.(emailVal, passVal);
+            if (res?.status === 403 && res?.body?.error === 'elevation_required') {
+              if (errorEl) {
+                errorEl.textContent = 'Start the launcher as Administrator to log in.';
+                errorEl.style.display = 'block';
+              }
+              if (adminNotice) adminNotice.style.display = 'block';
+              if (btnLogin) {
+                btnLogin.disabled = false;
+                btnLogin.innerHTML = '<strong>Sign In</strong>';
+              }
+              return;
+            }
+            const ok = !!res && (res.status >= 200 && res.status < 300) && res.body && (res.body.display_name || res.body.account_id);
+            if (!ok) {
+              throw new Error('Invalid credentials');
+            }
+            const displayName = res.body?.display_name || 'User';
+            const charRaw = res.body?.character ?? res.body?.Character;
+            let skinUrl = null;
+            try {
+              const cleanId = (charRaw || '').replace(/^AthenaCharacter:/i, '');
+              if (cleanId) {
+                const apiUrl = 'https://fortnite-api.com/v2/cosmetics/br/search?id=' + encodeURIComponent(cleanId);
+                const r = await fetch(apiUrl);
+                if (r?.ok) {
+                  const j = await r.json();
+                  skinUrl = j?.data?.images?.smallIcon || j?.data?.images?.icon || null;
+                }
+              }
+            } catch (_) {}
+            try {
+              localStorage.setItem('username', displayName);
+              if (skinUrl) localStorage.setItem('userSkin', skinUrl);
+            } catch (_) {}
+            await window.fmod?.auth?.set?.({
+              isLoggedIn: true,
+              rememberMe: remember,
+              displayName,
+              skinUrl: skinUrl || null,
+              email: emailVal,
+              password: passVal
+            });
+            await window.fmod?.nav?.toMain?.();
+          } catch (err) {
+            if (btnLogin) {
+              btnLogin.disabled = false;
+              btnLogin.innerHTML = '<strong>Sign In</strong>';
+            }
+            if (errorEl) {
+              errorEl.textContent = 'Invalid email or password.';
+              errorEl.style.display = 'block';
+            }
+          }
+        });
+
+        
+              })();
+    </script>
+      </body>
+</html>

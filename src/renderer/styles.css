@@ -1,0 +1,76 @@
+:root {
+  --bg: #0f1220;
+  --panel: #151932;
+  --text: #e6e8f0;
+  --muted: #a3acc2;
+  --accent: #6ee7ff;
+  --accent-2: #9b8cff;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  background: radial-gradient(1200px 800px at 20% -10%, rgba(110, 231, 255, 0.12), transparent),
+              radial-gradient(1000px 900px at 120% 10%, rgba(155, 140, 255, 0.12), transparent),
+              var(--bg);
+  color: var(--text);
+}
+
+.app-header, .app-footer {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 12px 20px;
+}
+
+.app-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  padding: 10px 16px;
+  color: var(--muted);
+}
+
+.content {
+  padding: 24px;
+  padding-bottom: 80px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+
+h1, h2 { margin: 0 0 8px 0; }
+
+p { color: var(--muted); }
+
+.actions { display: flex; gap: 10px; margin-top: 12px; }
+
+button {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  color: #0c0f1a;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.06s ease, filter 0.2s ease;
+}
+button:hover { filter: brightness(1.05); }
+button:active { transform: translateY(1px); }
+
+.status { margin-top: 10px; color: var(--text); }
